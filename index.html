@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080b18">
+<title>PROTOCOLE ZÉRO</title>
+<style>
+:root{--bg:#070a14;--panel:#11182a;--line:#35415e;--cyan:#72e8f2;--violet:#a78bfa;--lime:#b8ff9b;--amber:#ffd477;--muted:#aab4ca}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:22px;display:grid;place-items:center;background:radial-gradient(ellipse at 12% 8%,#24315b 0,transparent 36%),radial-gradient(ellipse at 90% 90%,#321b50 0,transparent 32%),var(--bg);color:#f4f6ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{width:min(780px,100%)}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase}
+.tag{border:1px solid var(--line);border-radius:99px;padding:8px 12px;white-space:nowrap}
+h1{font-size:clamp(2.5rem,9vw,5rem);line-height:.9;letter-spacing:-.065em;text-transform:uppercase;margin:28px 0 12px}
+h1 span{color:var(--cyan);text-shadow:0 0 26px #72e8f255}
+.lead{color:#c0c9dc;line-height:1.65;max-width:62ch}
+.panel{position:relative;overflow:hidden;margin-top:26px;padding:clamp(20px,5vw,36px);border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,#151e34f2,#0c1120f5);box-shadow:0 25px 90px #0008}
+.panel:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--lime))}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.kicker{font-size:.72rem;color:var(--cyan);letter-spacing:.19em;text-transform:uppercase;font-weight:800}
+.timer{font:800 1rem ui-monospace,monospace;color:var(--amber);border:1px solid #665537;border-radius:10px;padding:8px 11px}
+h2{font-size:clamp(1.4rem,4vw,2rem);margin:14px 0 12px}
+.copy{color:#e3e9f8;line-height:1.8;font-size:1.05rem}
+.muted{color:var(--muted)}
+.steps{display:flex;gap:7px;margin-top:22px}
+.steps i{height:5px;flex:1;background:#303b56;border-radius:9px}
+.steps i.done{background:linear-gradient(90deg,var(--cyan),var(--violet))}
+.answerrow{display:flex;gap:10px;margin-top:24px}
+input{flex:1;min-width:0;background:#080d19;color:white;border:1px solid #465575;border-radius:12px;padding:15px;font-size:1rem;outline:none}
+input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #72e8f21f}
+button{cursor:pointer;border:0;border-radius:12px;padding:0 20px;background:linear-gradient(100deg,var(--cyan),#a7c9ff);color:#07101a;font-weight:900;letter-spacing:.04em}
+button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+button:focus-visible,input:focus-visible{outline:2px solid white;outline-offset:3px}
+.feedback{min-height:28px;margin-top:13px;color:var(--amber);font-weight:650}
+.actions{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-top:12px}
+.hint{border:0;background:none;color:var(--cyan);padding:0;text-decoration:underline;font-weight:650}
+.small{font-size:.8rem;color:var(--muted)}
+.hidden{display:none!important}
+.reward{text-align:center}
+.reward .symbol{font-size:4.2rem;filter:drop-shadow(0 0 22px #ffd47788);animation:float 2.5s ease-in-out infinite}
+.reward h2{font-size:clamp(2rem,7vw,3.5rem);color:var(--lime);text-transform:uppercase}
+.gift{margin:22px auto;padding:20px;border:1px dashed var(--amber);border-radius:15px;background:#090e1c;max-width:560px;line-height:1.7}
+.gift strong{display:block;color:var(--amber);font-size:1.2rem;margin-bottom:8px}
+.giftcode{font:700 1rem ui-monospace,monospace;color:var(--lime);overflow-wrap:anywhere}
+.footer{margin-top:18px;text-align:center;color:#75819e;font-size:.72rem;letter-spacing:.12em}
+.overlay{position:fixed;inset:0;background:#03050ceF;display:grid;place-items:center;padding:24px;z-index:5}
+.modal{max-width:520px;width:100%;background:#11182a;border:1px solid var(--line);border-radius:20px;padding:28px;text-align:center;box-shadow:0 30px 100px #000}
+.modal h2{margin-top:0}
+.modal input{width:100%;margin:14px 0}
+.modal button{padding:15px 20px}
+@keyframes float{50%{transform:translateY(-9px)}}
+@keyframes win{0%{transform:scale(.75);opacity:0}70%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+.reward{animation:win .7s ease both}
+@media(max-width:520px){.answerrow{flex-direction:column}.answerrow button{padding:15px}.actions{align-items:flex-start;flex-direction:column}.timer{font-size:.88rem}}
+</style>
+</head>
+<body>
+<div class="overlay" id="intro">
+  <div class="modal">
+    <div class="kicker">Accès sécurisé · Protocole zéro</div>
+    <h2>Une mission t'attend.</h2>
+    <p class="lead">Un paquet confidentiel est verrouillé. Quatre épreuves te séparent de son contenu. Pas de hasard : uniquement de la logique, de l'observation et un peu de sang-froid.</p>
+    <p class="small">Durée indicative : 10 minutes · Les indices sont autorisés.</p>
+    <input id="agentName" type="text" maxlength="28" placeholder="Ton prénom, agent…" aria-label="Ton prénom">
+    <button id="start">LANCER LA MISSION</button>
+  </div>
+</div>
+
+<main>
+  <header><span>◈ Bureau des opérations spéciales</span><span class="tag">Dossier 00-27</span></header>
+  <h1>Protocole <span>Zéro</span></h1>
+  <p class="lead" id="welcome">Quatre verrous. Une seule issue. Le contenu du paquet reste classifié jusqu'à la validation finale.</p>
+
+  <section class="panel" id="game">
+    <div class="row"><div class="kicker" id="level">Épreuve 01 / 04</div><div class="timer" id="timer">10:00</div></div>
+    <h2 id="title">Le décalage</h2>
+    <div class="copy" id="puzzle"></div>
+    <div class="answerrow">
+      <input id="answer" type="text" autocomplete="off" placeholder="Saisis ta réponse…" aria-label="Réponse">
+      <button id="submit">VALIDER</button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="actions"><button class="hint" id="hint" type="button">Afficher un indice</button><span class="small" id="hintCount">Indices utilisés : 0</span></div>
+    <div class="steps" id="progress"><i class="done"></i><i></i><i></i><i></i></div>
+  </section>
+
+  <section class="panel reward hidden" id="reward">
+    <div class="symbol">✦</div>
+    <div class="kicker">Accès autorisé · Paquet déverrouillé</div>
+    <h2>Mission accomplie<span id="agentSuffix"></span> !</h2>
+    <p class="copy">Tu as franchi les quatre niveaux et neutralisé le protocole de sécurité.<br><strong>Le contenu confidentiel est à toi.</strong></p>
+    <div class="gift">
+      <strong>🎁 TON CADEAU</strong>
+      <div style="font-size:1.15rem;font-weight:800">Mario Kart 8 Deluxe – Pass circuits additionnels</div>
+      <p class="small">Bon d'activation Instant Gaming</p>
+      <div class="giftcode" id="giftCode">[AJOUTER LE CODE DU BON ICI]</div>
+    </div>
+    <p class="copy">Bravo, champion. Et maintenant, place au plaisir !</p>
+  </section>
+  <div class="footer">SESSION SURVEILLÉE · TOUTE TENTATIVE DE FRAUDE SERA INUTILE</div>
+</main>
+<script>
+// Personnalisation : remplace le texte ci-dessous par le vrai code cadeau avant de publier.
+// Attention : sur un site public, le code intégré au HTML peut être retrouvé dans le code source.
+const GIFT_CODE = "[AJOUTER LE CODE DU BON ICI]";
+
+const puzzles = [
+ {title:"Le décalage",body:`Un message a été intercepté :<br><br><strong style="font:800 1.35rem ui-monospace,monospace;color:var(--cyan)">OH QRPEUH HVW VHSW</strong><br><br>Le texte a été chiffré en décalant chaque lettre de trois rangs vers l'avant dans l'alphabet. Pour le lire, il faut donc reculer de trois rangs.<br><br><strong>Quel nombre est écrit en toutes lettres dans le message ?</strong>`,answers:["sept","7"],hint:"A devient X quand on recule de trois lettres. Déchiffre les mots un par un."},
+ {title:"La suite logique",body:`Observe cette suite :<br><br><strong style="font:800 1.5rem ui-monospace,monospace;color:var(--cyan)">2 – 6 – 12 – 20 – 30 – ?</strong><br><br>Chaque terme suit une règle régulière. Trouve le nombre qui remplace le point d'interrogation.`,answers:["42","quarante deux","quarante-deux"],hint:"Les écarts entre les nombres sont 4, 6, 8 et 10. Quel est le prochain écart ?"},
+ {title:"Le mot invisible",body:`Je peux être immense ou minuscule.<br>Je te suis partout quand il y a de la lumière.<br>Mais dans le noir complet, je disparais.<br><br><strong>Qui suis-je ?</strong>`,answers:["ombre","une ombre"],hint:"Regarde par terre quand tu es dehors au soleil…"},
+ {title:"Le langage machine",body:`Dernier test avant l'ouverture.<br><br>Le système affiche :<br><strong style="font:800 1.8rem ui-monospace,monospace;color:var(--cyan);letter-spacing:.2em">1001</strong><br><br>Ce nombre est écrit en binaire. Convertis-le en base 10.<br><br><strong>Quel nombre obtiens-tu ?</strong>`,answers:["9","neuf"],hint:"En binaire, les positions valent 8, 4, 2 et 1. Additionne celles qui portent un 1."}
+];
+let current=0, hints=0, seconds=600, interval=null, agent="";
+const $=id=>document.getElementById(id);
+const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim().replace(/\s+/g," ");
+function render(){
+ const p=puzzles[current];
+ $("level").textContent=`Épreuve ${String(current+1).padStart(2,"0")} / 04`;
+ $("title").textContent=p.title;
+ $("puzzle").innerHTML=p.body;
+ $("answer").value="";$("feedback").textContent="";
+ $("hintCount").textContent=`Indices utilisés : ${hints}`;
+ [...$("progress").children].forEach((el,i)=>el.classList.toggle("done",i<=current));
+ $("answer").focus();
+}
+function tick(){
+ seconds=Math.max(0,seconds-1);
+ $("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
+ if(seconds===0){clearInterval(interval);$("timer").textContent="TEMPS ÉCOULÉ";$("feedback").textContent="Le temps est écoulé… mais la mission reste ouverte. Prends ton temps et continue !";}
+}
+function submit(){
+ const value=norm($("answer").value);
+ if(puzzles[current].answers.some(a=>norm(a)===value)){
+   if(current<puzzles.length-1){
+     $("feedback").textContent="Accès validé. Verrou suivant déverrouillé…";
+     current++;
+     setTimeout(render,850);
+   } else {
+     clearInterval(interval);
+     $("game").classList.add("hidden");
+     $("reward").classList.remove("hidden");
+     $("agentSuffix").textContent=agent?`, ${agent}`:"";
+     $("giftCode").textContent=GIFT_CODE;
+     window.scrollTo({top:0,behavior:"smooth"});
+   }
+ } else {
+   $("feedback").textContent="Réponse incorrecte. Le système n'a pas validé cette combinaison. Réessaie.";
+   $("answer").focus();
+ }
+}
+$("start").addEventListener("click",()=>{
+ agent=$("agentName").value.trim();
+ $("intro").classList.add("hidden");
+ $("welcome").textContent=agent?`Agent ${agent}, votre mission commence maintenant. Quatre verrous. Une seule issue.`:"Quatre verrous. Une seule issue. Le contenu du paquet reste classifié jusqu'à la validation finale.";
+ render();interval=setInterval(tick,1000);
+});
+$("submit").addEventListener("click",submit);
+$("answer").addEventListener("keydown",e=>{if(e.key==="Enter")submit()});
+$("hint").addEventListener("click",()=>{$("feedback").textContent="INDICE : "+puzzles[current].hint;hints++;$("hintCount").textContent=`Indices utilisés : ${hints}`;});
+</script>
+</body>
+</html>
